@@ -38,7 +38,7 @@ All of my Glade automatic had screws in it which makes the disassembly and reass
 * A DC Motor is used to push down the top of the can in the device.
 * Glade is moving the motor in both directions
 
-## Connections & soldering
+## Lets build it
 
 * USB cable -> Step down
   * red -> IN+ (red wire)
@@ -50,14 +50,20 @@ All of my Glade automatic had screws in it which makes the disassembly and reass
   * second IN+ -> 5V (red wire)
   * second IN- -> GND (black wire)
 * ESP8266 -> DRV8833
-  * D1 -> IN1
-  * D2 -> IN2
+  * D1 -> IN1 (green wire)
+  * D2 -> IN2 (orange wire)
 * DRV8833 -> DC-Motor
   * OUT1 -> red wire side
   * OUT2 -> black wire side
 
 At rear of DRV8833 there is Jumper J2, bridge that if not already bridged.
 
+Adjust the DC/DC buck converter to output 3V.
+
+After flashing the ESP8266 please test if the movement direction is correct.
+If it is not, change the GPIO pins at forward and reverse pin.
+Forward means pushing, reverse means moving back to start position.
+Yoy can also adjust the timing if needed. For me it works totally fine.
 
 ## ESPHome YAML
 
