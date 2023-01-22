@@ -28,7 +28,7 @@ All of my Glade automatic had screws in it which makes the disassembly and reass
 
 ## Needed tools
 
-* Screwdriver with rectangular bit 2.2 mm
+* Screwdriver with triangular bit 2.2 mm
 * Soldering iron
 * Wires (preferred in different colors) (e.g. [10-pack of wires](https://amzn.to/3QxKqKK))
 * Drill bit which matches the diameter of the USB cable
