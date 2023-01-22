@@ -67,76 +67,21 @@ Yoy can also adjust the timing if needed. For me it works totally fine.
 
 ## ESPHome YAML
 
-```yaml
-substitutions:
-  devicename: airfreshener
-  friendly_name: Air freshener
+The YAML is now moved to its [own file](airfreshener.yaml).
 
-esphome:
-  name: $devicename
+## Version History
 
-esp8266:
-  board: esp01_1m
+* 2022-01-22
+  * Added spray counter as readonly data
+  * Added reset button to set spraycounter back to 0
+  * Changed timings for glade cans (previously worked fine for airwick cans but not glade cans)
+  * Spraying logic moved to a script
+  * Avoiding multiple script executions by the button which avoids motor stress.
+  * Moved ESPHome YAMl to its own file
+* 2022-01-12
+  * First version of airfreshener project
 
-logger:
-
-api:
-  encryption:
-    key: "YOUR_ENCRYPTION_KEY"
-
-ota:
-  password: "YOUR_OTA_PASSWORD"
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true # needed in case of hidden WiFi SSID
-  use_address: 192.168.0.201 # only an example, needed if ESP device is in a different VLAN than ESPHome
-
-output:
-  - platform: esp8266_pwm
-    id: motor_forward_pin
-    pin: GPIO4
-  - platform: esp8266_pwm
-    id: motor_reverse_pin
-    pin: GPIO5
-
-fan:
-  - platform: hbridge
-    id: my_fan
-    name: ${friendly_name} Motor
-    pin_a: motor_forward_pin
-    pin_b: motor_reverse_pin
-    # enable_pin: motor_enable
-    decay_mode: slow
-    internal: true
-
-
-button:
-  - platform: template
-    name: ${friendly_name} Spray
-    id: btn_spray
-    icon: mdi:spray
-    on_press:
-      then:
-        - fan.hbridge.brake: my_fan
-        - fan.turn_on:
-            id: my_fan
-            speed: 80
-            direction: forward
-        - delay: 250ms
-        - fan.hbridge.brake: my_fan
-        - fan.turn_on:
-            id: my_fan
-            speed: 80
-            direction: reverse
-        - delay: 200ms
-        - fan.hbridge.brake: my_fan
-        - fan.turn_off:
-            id: my_fan
-```
-
-## Pictures
+## Assembly Pictures
 ![Open glade automatic](images/glade-automatic-open.jpg)
 ![Glade motor unit](images/glade-motor-unit.jpg)
 ![USB Cable](images/usb-cable.jpg)
@@ -144,3 +89,6 @@ button:
 ![Step down wiring rear](images/step-down-wiring2.jpg)
 ![Placement of DRV8833](images/drv8833-placement.jpg)
 ![Finished wiring](images/finished-open.jpg)
+![Finished front view](images/finished-front.jpg)
+![Finished side view](images/finished-sideview.jpg)
+![Finished back view](images/finished-back.jpg)

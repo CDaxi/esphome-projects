@@ -1,0 +1,118 @@
+substitutions:
+  devicename: airfreshener
+  friendly_name: Airfreshener
+  friendly_suffix_counter: Spray counter
+  friendly_suffix_button_spray: Spray
+  friendly_suffix_button_reset: Reset spray counter
+
+esphome:
+  name: $devicename
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "YOUR_ENCRYPTION_KEY"
+
+ota:
+  password: "YOUR_OTA_KEY"
+
+wifi:
+  ssid: !secret wifi_ssid # wifi credentials should be storen in secrets
+  password: !secret wifi_password # wifi credentials should be storen in secrets
+  fast_connect: true # true needed in case of hidden SSID
+  use_address: 10.10.3.92 # IP needed in case of different VLANs
+
+output:
+  - platform: esp8266_pwm
+    id: motor_forward_pin
+    pin: GPIO4
+  - platform: esp8266_pwm
+    id: motor_reverse_pin
+    pin: GPIO5
+
+fan:
+  - platform: hbridge
+    id: spray_motor
+    name: ${friendly_name} Motor
+    pin_a: motor_forward_pin
+    pin_b: motor_reverse_pin
+    # enable_pin: motor_enable
+    decay_mode: slow
+    internal: true
+
+number:
+  - platform: template
+    #name: ${friendly_name} ${friendly_suffix_counter}
+    icon: mdi:counter
+    id: spray_counter
+    restore_value: true
+    update_interval: 30s
+    min_value: 0
+    max_value: 3000
+    mode: box
+    step: 1
+    optimistic: true
+    internal: true
+
+sensor:
+  - platform: template
+    name: ${friendly_name} ${friendly_suffix_counter}
+    icon: mdi:counter
+    id: spray_counter_template
+    state_class: measurement
+    unit_of_measurement: ""
+    accuracy_decimals: 0
+    lambda: |-
+      return id(spray_counter).state;
+    update_interval: 60s
+
+button:
+  - platform: template
+    name: ${friendly_name} ${friendly_suffix_button_spray}
+    id: btn_spray
+    icon: mdi:spray
+    on_press:
+      then:
+        if:
+          condition:
+            not:
+              script.is_running: do_spray
+          then:
+            script.execute: do_spray
+  - platform: template
+    name: ${friendly_name} ${friendly_suffix_button_reset}
+    icon: mdi:restart
+    on_press:
+      then:
+        - number.set:
+            id: spray_counter
+            value: 0
+
+script:
+  - id: do_spray
+    then:
+      - number.increment: spray_counter
+      - component.update: spray_counter
+      - component.update: spray_counter_template
+      - fan.hbridge.brake: spray_motor
+      - fan.turn_on:
+          id: spray_motor
+          speed: 80
+          direction: forward
+      - delay: 350ms
+      - fan.hbridge.brake: spray_motor
+      - fan.turn_on:
+          id: spray_motor
+          speed: 80
+          direction: reverse
+      - delay: 200ms
+      - fan.hbridge.brake: spray_motor
+      - fan.turn_off:
+          id: spray_motor
+      - delay: 500ms
