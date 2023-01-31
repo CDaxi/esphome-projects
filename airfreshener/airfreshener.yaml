@@ -97,6 +97,8 @@ button:
         - number.set:
             id: spray_counter
             value: 0
+        - component.update: spray_counter
+        - component.update: spray_counter_template
 
 script:
   - id: do_spray
